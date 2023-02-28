@@ -30,6 +30,36 @@
   text-align: right;
 }
 
-#hello {
-  height: 200vh;
+p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+          line-clamp: 4;
+  -webkit-box-orient: vertical;
+}
+
+.alert {
+  width: 90%;
+  height: 60vh;
+  margin: auto;
+  margin-top: 20vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.alert-dismissible {
+  padding-right: 1rem;
+}
+
+.alert-heading {
+  margin-bottom: 20px;
+}
+
+img {
+  width: 100%;
+  height: 80%;
+  object-fit: cover;
+  margin-bottom: auto;
 }

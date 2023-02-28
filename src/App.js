@@ -1,4 +1,7 @@
 import './App.css';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import Alert from 'react-bootstrap/Alert';
 import Accordion from 'react-bootstrap/Accordion'
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
@@ -7,36 +10,52 @@ import Image from 'react-bootstrap/Image'
 import Row from 'react-bootstrap/Row';
 
 async function fetchAPIData(url) {
-  try {
-    const response = await fetch(url);
-    const json = await response.json();
-  } catch (err) {
-    // error handling
-  } finally {
-    // runs no matter what
-  }
-}
-
-function HeadBlock() {
-  return (
-    <div className="HeadBlock">
-      <Form.Control type="text" placeholder="Search images by breed..." />
-      <Row>
-        <Col id="randImgBtnCol">
-          <Button variant="secondary">Random Image</Button>
-        </Col>
-        <Col id="randFactBtnCol">
-          <Button variant="secondary">Random Fact</Button>
-        </Col>
-      </Row>
-    </div>
-  );
+  return await axios({
+    url: url,
+    method: 'get'
+  })
 }
 
 function App() {
+  const [show, setShow] = useState(true);
+  const [dogImage, setDogImage] = useState([]);
+  const [fetchDogImage, setFetchDogImage] = useState(false);
+
+  useEffect(() => {
+    console.log("Fetching random image...");
+    async function getData() {
+      const res = await fetchAPIData('https://dog.ceo/api/breeds/image/random');
+      setDogImage(res.data);
+    }
+    getData();
+  }, [fetchDogImage]);
+
+
+  if (show) {
+    return (
+      <Alert variant="secondary" onClose={() => {setShow(false); setFetchDogImage(!fetchDogImage);}} dismissible>
+        <Alert.Heading>Random Image</Alert.Heading>
+        <Image rounded src={dogImage.message} />
+        {/* <Image rounded src="https:\/\/images.dog.ceo\/breeds\/collie-border\/n02106166_6569.jpg" /> */}
+        <Button variant="secondary" onClick={() => setFetchDogImage(!fetchDogImage)}>Another One!</Button>
+      </Alert>
+    );
+  }
+
   return (
     <div className="App">
-      <HeadBlock />
+      <div className="HeadBlock">
+        <Form.Control type="text" placeholder="Search images by breed..." />
+        <Row>
+          <Col id="randImgBtnCol">
+            <Button variant="secondary" onClick={() => setShow(true)}>Random Image</Button>
+          </Col>
+          <Col id="randFactBtnCol">
+            <Button variant="secondary">Random Fact</Button>
+          </Col>
+        </Row>
+      </div>
+
       <Accordion defaultActiveKey={['0']} flush>
         <Accordion.Item eventKey='0'>
           <Accordion.Header>Border Collie</Accordion.Header>
