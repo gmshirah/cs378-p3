@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Image from 'react-bootstrap/Image'
+import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 
 async function fetchAPIData(url) {
@@ -66,7 +67,14 @@ function App() {
   return (
     <div className="App">
       <div className="HeadBlock">
-        <Form.Control type="text" placeholder="Search images by breed..." />
+        <InputGroup>
+          <Form.Control type="text" placeholder="Search images by breed..." />
+          <Button variant="outline-secondary" id="searchBtn">
+            <span class="material-symbols-outlined">
+              search
+            </span>
+          </Button>
+        </InputGroup>
         <Row>
           <Col id="randImgBtnCol">
             <Button variant="secondary" onClick={() => setShowImage(true)}>Random Image</Button>
