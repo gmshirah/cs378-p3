@@ -87,7 +87,7 @@ function App() {
       return (
         <Alert variant="danger" onClose={() => {setShowSearch(false); setSearchValue(""); setSearchError(false);}} dismissible>
           <Alert.Heading>Invalid Search</Alert.Heading>
-          <p>Oh, no! Your image search returned zero results. Perhaps you misspelled the dog breed you meant to search for? Please close this alert and try again.</p>
+          <p>Oh, no! We couldn't find any images of "{searchValue}". Please close this alert and try again.</p>
         </Alert>
       );
     } else {
