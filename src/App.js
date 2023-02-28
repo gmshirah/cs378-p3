@@ -17,9 +17,12 @@ async function fetchAPIData(url) {
 }
 
 function App() {
-  const [show, setShow] = useState(true);
+  const [showImage, setShowImage] = useState(false);
+  const [showFact, setShowFact] = useState(false);
   const [dogImage, setDogImage] = useState([]);
   const [fetchDogImage, setFetchDogImage] = useState(false);
+  const [dogFact, setDogFact] = useState([]);
+  const [fetchDogFact, setFetchDogFact] = useState(false);
 
   useEffect(() => {
     console.log("Fetching random image...");
@@ -30,14 +33,32 @@ function App() {
     getData();
   }, [fetchDogImage]);
 
+  useEffect(() => {
+    console.log("Fetching random fact...");
+    async function getData() {
+      const res = await fetchAPIData('https://dogapi.dog/api/v2/facts');
+      setDogFact(res.data.data[0]);
+    }
+    getData();
+  }, [fetchDogFact]);
 
-  if (show) {
+
+  if (showImage) {
     return (
-      <Alert variant="secondary" onClose={() => {setShow(false); setFetchDogImage(!fetchDogImage);}} dismissible>
+      <Alert variant="secondary" onClose={() => {setShowImage(false); setFetchDogImage(!fetchDogImage);}} dismissible>
         <Alert.Heading>Random Image</Alert.Heading>
         <Image rounded src={dogImage.message} />
-        {/* <Image rounded src="https:\/\/images.dog.ceo\/breeds\/collie-border\/n02106166_6569.jpg" /> */}
         <Button variant="secondary" onClick={() => setFetchDogImage(!fetchDogImage)}>Another One!</Button>
+      </Alert>
+    );
+  }
+
+  if (showFact) {
+    return (
+      <Alert variant="secondary" onClose={() => {setShowFact(false); setFetchDogFact(!fetchDogFact);}} dismissible>
+        <Alert.Heading>Random Fact</Alert.Heading>
+        <p>{dogFact.attributes.body}</p>
+        <Button variant="secondary" onClick={() => setFetchDogFact(!fetchDogFact)}>Another One!</Button>
       </Alert>
     );
   }
@@ -48,10 +69,10 @@ function App() {
         <Form.Control type="text" placeholder="Search images by breed..." />
         <Row>
           <Col id="randImgBtnCol">
-            <Button variant="secondary" onClick={() => setShow(true)}>Random Image</Button>
+            <Button variant="secondary" onClick={() => setShowImage(true)}>Random Image</Button>
           </Col>
           <Col id="randFactBtnCol">
-            <Button variant="secondary">Random Fact</Button>
+            <Button variant="secondary" onClick={() => setShowFact(true)}>Random Fact</Button>
           </Col>
         </Row>
       </div>

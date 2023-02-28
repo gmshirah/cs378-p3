@@ -30,14 +30,14 @@
   text-align: right;
 }
 
-p {
+/* p {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 4;
           line-clamp: 4;
   -webkit-box-orient: vertical;
-}
+} */
 
 .alert {
   width: 90%;
@@ -59,7 +59,7 @@ p {
 
 img {
   width: 100%;
-  height: 80%;
+  height: 75%;
   object-fit: cover;
-  margin-bottom: auto;
+  margin-bottom: 20px;
 }
