@@ -53,7 +53,7 @@ function App() {
     e.preventDefault();
     console.log("Fetching " + searchValue + " image...");
     let breed = searchValue;
-    breed.toLowerCase();
+    breed = breed.toLowerCase();
     let breedArray = breed.split(" ");
     let url = 'https://dog.ceo/api/breed/';
     if (breedArray.length > 1) {
@@ -65,6 +65,14 @@ function App() {
       try {
         const res = await fetchAPIData(url);
         setSearchImage(res.data);
+        breed = "";
+        for (let i = 0; i < breedArray.length; i++) {
+          if (i > 0) {
+            breed = breed + " ";
+          }
+          breed = breed + breedArray[i].substring(0, 1).toUpperCase() + breedArray[i].substring(1).toLowerCase();
+        }
+        setSearchValue(breed);
       } catch (err) {
         console.log(searchImage);
         setSearchError(true);
@@ -85,7 +93,7 @@ function App() {
     } else {
       return (
         <Alert variant="secondary" onClose={() => {setShowSearch(false); setSearchValue("");}} dismissible>
-          <Alert.Heading>Dog Breed</Alert.Heading>
+          <Alert.Heading>{searchValue}</Alert.Heading>
           <Image rounded src={searchImage.message} />
           <Button variant="secondary" onClick={onSearchSubmit}>Another One!</Button>
         </Alert>
