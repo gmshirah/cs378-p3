@@ -18,8 +18,12 @@ async function fetchAPIData(url) {
 }
 
 function App() {
+  const [searchValue, setSearchValue] = useState("");
+  const [searchError, setSearchError] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const [showImage, setShowImage] = useState(false);
   const [showFact, setShowFact] = useState(false);
+  const [searchImage, setSearchImage] = useState([]);
   const [dogImage, setDogImage] = useState([]);
   const [fetchDogImage, setFetchDogImage] = useState(false);
   const [dogFact, setDogFact] = useState([]);
@@ -43,6 +47,51 @@ function App() {
     getData();
   }, [fetchDogFact]);
 
+  const onSearchInput = ({target:{value}}) => setSearchValue(value);
+
+  const onSearchSubmit = e => {
+    e.preventDefault();
+    console.log("Fetching " + searchValue + " image...");
+    let breed = searchValue;
+    breed.toLowerCase();
+    let breedArray = breed.split(" ");
+    let url = 'https://dog.ceo/api/breed/';
+    if (breedArray.length > 1) {
+      url = url + breedArray[1] + '/';
+    }
+    url = url + breedArray[0] + '/';
+    url = url + 'images/random';
+    async function getData() {
+      try {
+        const res = await fetchAPIData(url);
+        setSearchImage(res.data);
+      } catch (err) {
+        console.log(searchImage);
+        setSearchError(true);
+      }
+    }
+    getData();
+    setShowSearch(true);
+  }
+
+  if (showSearch) {
+    if (searchError) {
+      return (
+        <Alert variant="danger" onClose={() => {setShowSearch(false); setSearchValue(""); setSearchError(false);}} dismissible>
+          <Alert.Heading>Invalid Search</Alert.Heading>
+          <p>Oh, no! Your image search returned zero results. Perhaps you misspelled the dog breed you meant to search for? Please close this alert and try again.</p>
+        </Alert>
+      );
+    } else {
+      return (
+        <Alert variant="secondary" onClose={() => {setShowSearch(false); setSearchValue("");}} dismissible>
+          <Alert.Heading>Dog Breed</Alert.Heading>
+          <Image rounded src={searchImage.message} />
+          <Button variant="secondary" onClick={onSearchSubmit}>Another One!</Button>
+        </Alert>
+      );
+    }
+  }
 
   if (showImage) {
     return (
@@ -67,14 +116,16 @@ function App() {
   return (
     <div className="App">
       <div className="HeadBlock">
-        <InputGroup>
-          <Form.Control type="text" placeholder="Search images by breed..." />
-          <Button variant="outline-secondary" id="searchBtn">
-            <span class="material-symbols-outlined">
-              search
-            </span>
-          </Button>
-        </InputGroup>
+        <Form onSubmit={onSearchSubmit}>
+          <InputGroup>
+            <Form.Control type="text" placeholder="Search images by breed..." onChange={onSearchInput} value={searchValue} />
+            <Button variant="outline-secondary" id="searchBtn" type="submit">
+              <span className="material-symbols-outlined">
+                search
+              </span>
+            </Button>
+          </InputGroup>
+        </Form>
         <Row>
           <Col id="randImgBtnCol">
             <Button variant="secondary" onClick={() => setShowImage(true)}>Random Image</Button>
