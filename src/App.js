@@ -8,6 +8,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Image from 'react-bootstrap/Image'
 import InputGroup from 'react-bootstrap/InputGroup';
+import Pagination from 'react-bootstrap/Pagination';
 import Row from 'react-bootstrap/Row';
 
 async function fetchAPIData(url) {
@@ -18,6 +19,8 @@ async function fetchAPIData(url) {
 }
 
 function App() {
+  const [page, setPage] = useState();
+  const [pageurl, setPageurl] = useState('https://dogapi.dog/api/v2/breeds');
   const [searchValue, setSearchValue] = useState("");
   const [searchError, setSearchError] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -32,12 +35,16 @@ function App() {
 
   useEffect(() => {
     console.log("Fetching breed info...");
+    setBreedInfo([]);
     async function getData() {
-      const res = await fetchAPIData('https://dogapi.dog/api/v2/breeds');
+      const res = await fetchAPIData(pageurl);
       setBreedInfo(res.data);
+      const pageString = res.data.links.current;
+      const parsedStrings = pageString.split("=");
+      setPage(parsedStrings[1]);
     }
     getData();
-  }, []);
+  }, [pageurl]);
 
   useEffect(() => {
     console.log("Fetching random image...");
@@ -155,25 +162,35 @@ function App() {
       </div>
 
       { breedInfo.data ? (
-        <Accordion flush>
-        {breedInfo.data.map(breed => (
-          <Accordion.Item key={breed.id} eventKey={breed.id}>
-            <Accordion.Header>{breed.attributes.name}</Accordion.Header>
-            <Accordion.Body>
-              <p><b>About</b></p>
-              <p>{breed.attributes.description}</p>
-              <p><b>Life Expectancy</b></p>
-              <p>{breed.attributes.life.min} - {breed.attributes.life.max} years</p>
-              <p><b>Male Weight</b></p>
-              <p>{breed.attributes.male_weight.min} - {breed.attributes.male_weight.max} lbs</p>
-              <p><b>Female Weight</b></p>
-              <p>{breed.attributes.female_weight.min} - {breed.attributes.female_weight.max} lbs</p>
-              <p><b>Hypoallergenic?</b></p>
-              { breed.attributes.hypoallergenic ? ( <p>Yes</p> ) : ( <p>No</p> )}
-            </Accordion.Body>
-          </Accordion.Item>
-        ))}
-        </Accordion>
+        <div>
+          <Accordion defaultActiveKey={breedInfo.data[0].id} flush>
+          {breedInfo.data.map(breed => (
+            <Accordion.Item key={breed.id} eventKey={breed.id}>
+              <Accordion.Header>{breed.attributes.name}</Accordion.Header>
+              <Accordion.Body>
+                <p><b>About</b></p>
+                <p>{breed.attributes.description}</p>
+                <p><b>Life Expectancy</b></p>
+                <p>{breed.attributes.life.min} - {breed.attributes.life.max} years</p>
+                <p><b>Male Weight</b></p>
+                <p>{breed.attributes.male_weight.min} - {breed.attributes.male_weight.max} lbs</p>
+                <p><b>Female Weight</b></p>
+                <p>{breed.attributes.female_weight.min} - {breed.attributes.female_weight.max} lbs</p>
+                <p><b>Hypoallergenic?</b></p>
+                { breed.attributes.hypoallergenic ? ( <p>Yes</p> ) : ( <p>No</p> )}
+              </Accordion.Body>
+            </Accordion.Item>
+          ))}
+          </Accordion>
+
+          <Pagination>
+            { breedInfo.links.first ? ( <Pagination.First onClick={() => setPageurl(breedInfo.links.first)} /> ) : ( <Pagination.First disabled /> )}
+            { breedInfo.links.prev ? ( <Pagination.Prev onClick={() => setPageurl(breedInfo.links.prev)} /> ) : ( <Pagination.Prev disabled /> )}
+            <Pagination.Item active>{page}</Pagination.Item>
+            { breedInfo.links.next ? ( <Pagination.Next onClick={() => setPageurl(breedInfo.links.next)} /> ) : ( <Pagination.Next disabled /> )}
+            { breedInfo.links.last ? ( <Pagination.Last onClick={() => setPageurl(breedInfo.links.last)} /> ) : ( <Pagination.Last disabled /> )}
+          </Pagination>
+        </div>
       ) : (
         <span></span>
       )}
