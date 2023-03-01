@@ -28,6 +28,16 @@ function App() {
   const [fetchDogImage, setFetchDogImage] = useState(false);
   const [dogFact, setDogFact] = useState([]);
   const [fetchDogFact, setFetchDogFact] = useState(false);
+  const [breedInfo, setBreedInfo] = useState([]);
+
+  useEffect(() => {
+    console.log("Fetching breed info...");
+    async function getData() {
+      const res = await fetchAPIData('https://dogapi.dog/api/v2/breeds');
+      setBreedInfo(res.data);
+    }
+    getData();
+  }, []);
 
   useEffect(() => {
     console.log("Fetching random image...");
@@ -144,23 +154,29 @@ function App() {
         </Row>
       </div>
 
-      <Accordion defaultActiveKey={['0']} flush>
-        <Accordion.Item eventKey='0'>
-          <Accordion.Header>Border Collie</Accordion.Header>
-          <Accordion.Body>
-            <p><b>About</b></p>
-            <p>The Border Collie is a medium-sized breed of herding dog from the borders of England and Scotland. These dogs are medium in size, with a thick double coat of fur to protect them from the cold. They have an energetic and intelligent demeanor, with an instinct for herding and working. They are highly trainable and obedient, but require firm and consistent training to be obedient. They are loyal and devoted to their family, with an independent nature that makes them well suited for herding and guard work.</p>
-            <p><b>Life Expectancy</b></p>
-            <p>12 - 16 years</p>
-            <p><b>Male Weight</b></p>
-            <p>20 - 30 lbs</p>
-            <p><b>Female Weight</b></p>
-            <p>17 - 25 lbs</p>
-            <p><b>Hypoallergenic?</b></p>
-            <p>No</p>
-          </Accordion.Body>
-        </Accordion.Item>
-      </Accordion>
+      { breedInfo.data ? (
+        <Accordion flush>
+        {breedInfo.data.map(breed => (
+          <Accordion.Item key={breed.id} eventKey={breed.id}>
+            <Accordion.Header>{breed.attributes.name}</Accordion.Header>
+            <Accordion.Body>
+              <p><b>About</b></p>
+              <p>{breed.attributes.description}</p>
+              <p><b>Life Expectancy</b></p>
+              <p>{breed.attributes.life.min} - {breed.attributes.life.max} years</p>
+              <p><b>Male Weight</b></p>
+              <p>{breed.attributes.male_weight.min} - {breed.attributes.male_weight.max} lbs</p>
+              <p><b>Female Weight</b></p>
+              <p>{breed.attributes.female_weight.min} - {breed.attributes.female_weight.max} lbs</p>
+              <p><b>Hypoallergenic?</b></p>
+              { breed.attributes.hypoallergenic ? ( <p>Yes</p> ) : ( <p>No</p> )}
+            </Accordion.Body>
+          </Accordion.Item>
+        ))}
+        </Accordion>
+      ) : (
+        <span></span>
+      )}
     </div>
   );
 }
